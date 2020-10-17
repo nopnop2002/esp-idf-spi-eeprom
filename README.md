@@ -1,5 +1,5 @@
 # esp-idf-m95
-SPI EEPROM Access Library for esp-idf   
+M95 series SPI EEPROM Access Library for esp-idf   
 
 There are several variations in the M95 series.   
 4.5 V to 5.5 V for M95xxx   
@@ -30,17 +30,17 @@ make flash
 
 # Memory size
 
-|Device|Number of Bits|Bytes of Page|Address range|
-|:---|:---|:---|:---|
-|M95010|1K|16|0x00-0x7F|
-|M95020|2K|16|0x00-0xFF|
-|M95040|4K|16|0x00-0x1FF|
-|M95080|8K|32|0x00-0x3FF|
-|M95160|16K|32|0x00-0x7FF|
-|M95320|32K|32|0x00-0xFFF|
-|M95640|64K|32|0x00-0x1FFF|
-|M95128|128K|64|0x00-0x3FFF|
-|M95256|256K|64|0x00-0x7FFF|
+|Device|# of Bits|# of Bytes|Page Size(Byte)|Address range|
+|:---|:---|:---|:---|:---|
+|M95010|1K|128|16|0x00-0x7F|
+|M95020|2K|256|16|0x00-0xFF|
+|M95040|4K|512|16|0x00-0x1FF|
+|M95080|8K|1024|32|0x00-0x3FF|
+|M95160|16K|2048|32|0x00-0x7FF|
+|M95320|32K|4196|32|0x00-0xFFF|
+|M95640|64K|8192|32|0x00-0x1FFF|
+|M95128|128K|16384|64|0x00-0x3FFF|
+|M95256|256K|32768|64|0x00-0x7FFF|
 
 ---
 
