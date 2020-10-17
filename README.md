@@ -6,7 +6,7 @@ There are several variations in the M95 series.
 2.5 V to 5.5 V for M95xxx-W   
 1.8 V to 5.5 V for M95xxx-R   
 
-__M95xxx  don't work with ESP32___
+__M95xxx don't work with ESP32__
 
 # Configure
 You have to set this config value with menuconfig.   
