@@ -275,7 +275,7 @@ int16_t M95_PageSize(M95_t * dev)
 //         M32640:Up to 32 Bytes
 //         M32128:Up to 64 Bytes
 //         M32256:Up to 64 Bytes
-// n(in):Number of data bytes to read
+// n(in):Number of data bytes to write
 //
 int16_t M95_PageWrite(M95_t * dev, uint16_t addr, uint8_t* buf, int16_t n)
 {
