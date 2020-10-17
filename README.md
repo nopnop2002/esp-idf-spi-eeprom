@@ -1,5 +1,5 @@
 # esp-idf-spi-eeprom
-SPI EEPROM Access Driver for esp-idf   
+SPI EEPROM Driver for esp-idf   
 
 
 # Configure
