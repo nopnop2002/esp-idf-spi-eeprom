@@ -1,0 +1,74 @@
+menu "EEPROM Configuration"
+
+	choice MODEL
+		prompt "EEPROM MODEL"
+		default M95010
+		help
+			Select EEPROM Chip Model.
+		config M95010
+			bool "M95010"
+			help
+				EEPROM is M95010(1K Bit)
+		config M95020
+			bool "M95020"
+			help
+				EEPROM is M95020(2K Bit)
+		config M95040
+			bool "M95040"
+			help
+				EEPROM is M95040(4K Bit)
+		config M95080
+			bool "M95080"
+			help
+				EEPROM is M95080(8K Bit)
+		config M95160
+			bool "M95160"
+			help
+				EEPROM is M95160(16K Bit)
+		config M95320
+			bool "M95320"
+			help
+				EEPROM is M95320(32K Bit)
+		config M95640
+			bool "M95640"
+			help
+				EEPROM is M95640(64K Bit)
+		config M95128
+			bool "M95128"
+			help
+				EEPROM is M95128(128K Bit)
+		config M95256
+			bool "M95256"
+			help
+				EEPROM is M95256(256K Bit)
+	endchoice
+
+	choice SPI
+		prompt "SPI BUS"
+		default SPI2
+		help
+			Select SPI BUS.
+		config SPI2
+			bool "SPI2"
+			help
+				SPI BUS is SPI2.
+				SCLK GPIO14. MISO GPIO12. MOSI GPIO13.
+		config SPI3
+			bool "SPI3"
+			help
+				SPI BUS is SPI3.
+				SCLK GPIO18. MISO GPIO19. MOSI GPIO23.
+	endchoice
+
+	config CS_GPIO
+		int "CS GPIO number"
+		range 0 34
+		default 15
+		help
+			GPIO number (IOxx) to CS.
+			Some GPIOs are used for other purposes (flash connections, etc.).
+			GPIOs 35-39 are input-only so cannot be used as outputs.
+
+endmenu
+
+
