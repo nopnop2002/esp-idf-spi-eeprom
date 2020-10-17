@@ -7,7 +7,7 @@
 
 #include "esp_log.h"
 
-#include "m95.h"
+#include "eeprom.h"
 
 static const char *TAG = "MAIN";
 
@@ -24,39 +24,39 @@ static const int GPIO_SCLK = 18;
 #endif
 
 #if CONFIG_M95010
-#define	EEPROM_SIZE		1
+#define	EEPROM_MODEL		M95010
 #endif
 
 #if CONFIG_M95020
-#define	EEPROM_SIZE		2
+#define	EEPROM_MODEL		M95020
 #endif
 
 #if CONFIG_M95040
-#define	EEPROM_SIZE		4
+#define	EEPROM_MODEL		M98040
 #endif
 
 #if CONFIG_M95080
-#define	EEPROM_SIZE		8
+#define	EEPROM_MODEL		M95080
 #endif
 
 #if CONFIG_M95160
-#define	EEPROM_SIZE		16
+#define	EEPROM_MODEL		M95160
 #endif
 
 #if CONFIG_M95320
-#define	EEPROM_SIZE		32
+#define	EEPROM_MODEL		M95320
 #endif
 
 #if CONFIG_M95640
-#define	EEPROM_SIZE		64
+#define	EEPROM_MODEL		M95640
 #endif
 
 #if CONFIG_M95128
-#define	EEPROM_SIZE		128
+#define	EEPROM_MODEL		M95128
 #endif
 
 #if CONFIG_M95256
-#define	EEPROM_SIZE		256
+#define	EEPROM_MODEL		M95256
 #endif
 
 
@@ -87,41 +87,49 @@ void dump(uint8_t *dt, int n)
 
 void app_main(void)
 {
-	ESP_LOGI(TAG, "EEPROM_SIZE=%d", EEPROM_SIZE);
+	ESP_LOGI(TAG, "EEPROM_MODEL=%d", EEPROM_MODEL);
 	ESP_LOGI(TAG, "CONFIG_CS_GPIO=%d", CONFIG_CS_GPIO);
-	M95_t dev;
-	spi_master_init(&dev, EEPROM_SIZE, CONFIG_CS_GPIO, GPIO_MISO, GPIO_MOSI, GPIO_SCLK);
-	ESP_LOGI(TAG, "PageSize=%d Bytes",M95_PageSize(&dev));
+	EEPROM_t dev;
+	spi_master_init(&dev, EEPROM_MODEL, CONFIG_CS_GPIO, GPIO_MISO, GPIO_MOSI, GPIO_SCLK);
+	int totalBytes = eeprom_TotalBytes(&dev);
+	ESP_LOGI(TAG, "totalBytes=%d Bytes",totalBytes);
+	int pageSize = eeprom_PageSize(&dev);
+	ESP_LOGI(TAG, "pageSize=%d Bytes",pageSize);
+	int lastPage = eeprom_LastPage(&dev);
+	ESP_LOGI(TAG, "lastPage=%d Page",lastPage);
 
 	// Get Status Register
 	uint8_t reg;
 	esp_err_t ret;
-	ret = M95_ReadStatusReg(&dev, &reg);
+	ret = eeprom_ReadStatusReg(&dev, &reg);
 	if (ret != ESP_OK) {
 		ESP_LOGE(TAG, "ReadStatusReg fail %d",ret);
 		while(1) { vTaskDelay(1); }
 	} 
 	ESP_LOGI(TAG, "readStatusReg : %x", reg);
 
-	// Page Write
+	// Write Page
 	uint8_t wdata[128];
 	int len;
 	for (int i=0; i<128; i++) {
 		wdata[i]=0xff;	
 	}  
-	for (uint16_t addr=0; addr<128;addr=addr+16) {
-		len =  M95_PageWrite(&dev, addr, &wdata[addr], 16);
-		if (len != 16) {
-			ESP_LOGE(TAG, "Page Write fail");
+	int numPage = 128 / pageSize;
+	ESP_LOGI(TAG, "numPage : %d", numPage);
+	for (uint16_t pages=0; pages<numPage;pages++) {
+		int addr = pages * pageSize;
+		len =  eeprom_WritePage(&dev, pages, &wdata[addr]);
+		if (len != pageSize) {
+			ESP_LOGE(TAG, "WritePage fail");
 			while(1) { vTaskDelay(1); }
 		}
-		ESP_LOGD(TAG, "Page Write(Address=%d) len=%d", addr, len);
+		ESP_LOGD(TAG, "WritePage(pages=%d) len=%d", pages, len);
 	}
 
-	// Read 128 byte data from Address=0
+	// Read 128 byte from Address=0
 	uint8_t rbuf[128];
 	memset(rbuf, 0, 128);
-	len =  M95_Read(&dev, 0, rbuf, 128);
+	len =  eeprom_Read(&dev, 0, rbuf, 128);
 	if (len != 128) {
 		ESP_LOGE(TAG, "Read fail");
 		while(1) { vTaskDelay(1); }
@@ -129,22 +137,23 @@ void app_main(void)
 	ESP_LOGI(TAG, "Read Data: len=%d", len);
 	dump(rbuf, 128);
 
-	// Page Write
+	// Write Page
 	for (int i=0; i<128; i++) {
 		wdata[i]=i;	
 	}  
-	for (uint16_t addr=0; addr<128;addr=addr+16) {
-		len =  M95_PageWrite(&dev, addr, &wdata[addr], 16);
-		if (len != 16) {
-			ESP_LOGE(TAG, "Page Write fail");
+	for (uint16_t pages=0; pages<numPage;pages++) {
+		int addr = pages * pageSize;
+		len =  eeprom_WritePage(&dev, pages, &wdata[addr]);
+		if (len != pageSize) {
+			ESP_LOGE(TAG, "WritePage fail");
 			while(1) { vTaskDelay(1); }
 		}
-		ESP_LOGD(TAG, "Page Write(Address=%d) len=%d", addr, len);
+		ESP_LOGD(TAG, "WritePage(pages=%d) len=%d", pages, len);
 	}
 
-	// Read 128 byte data from Address=0
+	// Read 128 byte from Address=0
 	memset(rbuf, 0, 128);
-	len =  M95_Read(&dev, 0, rbuf, 128);
+	len =  eeprom_Read(&dev, 0, rbuf, 128);
 	if (len != 128) {
 		ESP_LOGE(TAG, "Read fail");
 		while(1) { vTaskDelay(1); }
@@ -152,30 +161,28 @@ void app_main(void)
 	ESP_LOGI(TAG, "Read Data: len=%d", len);
 	dump(rbuf, 128);
 
-	// Write data to Address=0x00
+	// Write Byte
 	for (int i=0; i<128; i++) {
 		wdata[i]=0xff-i;	
 	}  
 	for (int addr=0; addr<128;addr++) {
-		len =  M95_Write(&dev, addr, wdata[addr]);
+		len =  eeprom_WriteByte(&dev, addr, wdata[addr]);
 		if (len != 1) {
-			ESP_LOGE(TAG, "Write fail");
+			ESP_LOGE(TAG, "WriteByte fail");
 			while(1) { vTaskDelay(1); }
 		}
-		ESP_LOGD(TAG, "Write(Address=%d) len=%d", addr, len);
+		ESP_LOGD(TAG, "WriteByte(addr=%d) len=%d", addr, len);
 	}
 
-	// Read 128 byte data from Address=0
+	// Read 128 byte from Address=0
 	memset(rbuf, 0, 128);
-	len =  M95_Read(&dev, 0, rbuf, 128);
+	len =  eeprom_Read(&dev, 0, rbuf, 128);
 	if (len != 128) {
 		ESP_LOGE(TAG, "Read fail");
 		while(1) { vTaskDelay(1); }
 	}
 	ESP_LOGI(TAG, "Read Data: len=%d", len);
 	dump(rbuf, 128);
-
-
 }
 
 

@@ -8,9 +8,9 @@
 #include <driver/gpio.h>
 #include "esp_log.h"
 
-#include "m95.h"
+#include "eeprom.h"
 
-#define TAG "M95"
+#define TAG "EEPROM"
 
 #if 0
 static const int GPIO_MISO = 12;
@@ -32,11 +32,11 @@ static const int SPI_Frequency = SPI_MASTER_FREQ_8M;
 // GPIO_MOSI(in):GPIO of MOSI
 // GPIO_SCLK(in):GPIO of SCLK
 //
-void spi_master_init(M95_t * dev, int16_t SIZE, int16_t GPIO_CS, int GPIO_MISO, int GPIO_MOSI, int GPIO_SCLK)
+void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_MISO, int GPIO_MOSI, int GPIO_SCLK)
 {
 	esp_err_t ret;
 
-	ESP_LOGI(TAG, "GPIO_CS=%d",GPIO_CS);
+	ESP_LOGD(TAG, "GPIO_CS=%d",GPIO_CS);
 	gpio_pad_select_gpio( GPIO_CS );
 	gpio_set_direction( GPIO_CS, GPIO_MODE_OUTPUT );
 	gpio_set_level( GPIO_CS, 0 );
@@ -65,7 +65,52 @@ void spi_master_init(M95_t * dev, int16_t SIZE, int16_t GPIO_CS, int GPIO_MISO, 
 	ret = spi_bus_add_device( HSPI_HOST, &devcfg, &handle);
 	ESP_LOGD(TAG, "spi_bus_add_device=%d",ret);
 	assert(ret==ESP_OK);
-	dev->_size = SIZE;
+	if (model == M95010) {
+		dev->_totalBytes = 128;
+		dev->_addressBits = 7;
+		dev->_pageSize = 16;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95020) {
+		dev->_totalBytes = 256;
+		dev->_addressBits = 8;
+		dev->_pageSize = 16;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95040) {
+		dev->_totalBytes = 512;
+		dev->_addressBits = 9;
+		dev->_pageSize = 16;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95080) {
+		dev->_totalBytes = 1024;
+		dev->_addressBits = 10;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95160) {
+		dev->_totalBytes = 2048;
+		dev->_addressBits = 11;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95320) {
+		dev->_totalBytes = 4096;
+		dev->_addressBits = 12;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95640) {
+		dev->_totalBytes = 8192;
+		dev->_addressBits = 13;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95128) {
+		dev->_totalBytes = 16384;
+		dev->_addressBits = 14;
+		dev->_pageSize = 64;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95256) {
+		dev->_totalBytes = 32768;
+		dev->_addressBits = 15;
+		dev->_pageSize = 64;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	}
 	dev->_SPIHandle = handle;
 }
 
@@ -73,7 +118,7 @@ void spi_master_init(M95_t * dev, int16_t SIZE, int16_t GPIO_CS, int GPIO_MISO, 
 // Read Status Register (RDSR)
 // reg(out):Status
 //
-esp_err_t M95_ReadStatusReg(M95_t * dev, uint8_t * reg)
+esp_err_t eeprom_ReadStatusReg(EEPROM_t * dev, uint8_t * reg)
 {
 	spi_transaction_t SPITransaction;
 	uint8_t data[2];
@@ -84,7 +129,7 @@ esp_err_t M95_ReadStatusReg(M95_t * dev, uint8_t * reg)
 	SPITransaction.rx_buffer = data;
 	esp_err_t ret = spi_device_transmit( dev->_SPIHandle, &SPITransaction );
 	assert(ret==ESP_OK);
-	ESP_LOGI(TAG, "M95_ReadStatusReg=%x",data[1]);
+	ESP_LOGD(TAG, "eeprom_ReadStatusReg=%x",data[1]);
 	*reg = data[1];
 	return ret;
 }
@@ -94,7 +139,7 @@ esp_err_t M95_ReadStatusReg(M95_t * dev, uint8_t * reg)
 // true:Busy
 // false:Idle
 //
-bool M95_IsBusy(M95_t * dev)
+bool eeprom_IsBusy(EEPROM_t * dev)
 {
 	spi_transaction_t SPITransaction;
 	uint8_t data[2];
@@ -116,7 +161,7 @@ bool M95_IsBusy(M95_t * dev)
 // true:Write enable
 // false:Write disable
 //
-bool M95_IsWriteEnable(M95_t * dev)
+bool eeprom_IsWriteEnable(EEPROM_t * dev)
 {
 	spi_transaction_t SPITransaction;
 	uint8_t data[2];
@@ -135,7 +180,7 @@ bool M95_IsWriteEnable(M95_t * dev)
 //
 // Set write enable
 //
-esp_err_t M95_WriteEnable(M95_t * dev)
+esp_err_t eeprom_WriteEnable(EEPROM_t * dev)
 {
 	spi_transaction_t SPITransaction;
 	uint8_t data[1];
@@ -152,7 +197,7 @@ esp_err_t M95_WriteEnable(M95_t * dev)
 //
 // Set write disable
 //
-esp_err_t M95_WriteDisable(M95_t * dev)
+esp_err_t eeprom_WriteDisable(EEPROM_t * dev)
 {
 	spi_transaction_t SPITransaction;
 	uint8_t data[1];
@@ -171,33 +216,31 @@ esp_err_t M95_WriteDisable(M95_t * dev)
 // buf(out):Read data
 // n(in):Number of data bytes to read
 //
-int16_t M95_Read(M95_t * dev, uint16_t addr, uint8_t *buf, int16_t n)
+int16_t eeprom_Read(EEPROM_t * dev, uint16_t addr, uint8_t *buf, int16_t n)
 { 
 	esp_err_t ret;
 	spi_transaction_t SPITransaction;
 	uint8_t data[4];
-	int16_t offset = 0;
+	int16_t index = 0;
 	for (int i=0;i<n;i++) {
 		uint16_t _addr = addr + i;
 		data[0] = EEPROM_CMD_READ;
-		if (dev->_size <= 4) { // M95010,M95020,M95040
-			if (dev->_size == 4 && (addr & 0x10) == 0x10) {
-				data[0] = EEPROM_CMD_WRITE | 0x08;
-			}
+		if (dev->_addressBits == 9 && addr > 0xff) data[0] = data[0] | 0x08;
+		if (dev->_addressBits <= 9) {
 			data[1] = (_addr & 0xFF);
-			offset = 2;
+			index = 2;
 		} else {
 			data[1] = (_addr>>8) & 0xFF;
 			data[2] = _addr & 0xFF;
-			offset = 3;
+			index = 3;
 		}
 		memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-		SPITransaction.length = (offset+1) * 8;
+		SPITransaction.length = (index+1) * 8;
 		SPITransaction.tx_buffer = data;
 		SPITransaction.rx_buffer = data;
 		ret = spi_device_transmit( dev->_SPIHandle, &SPITransaction );
 		if (ret != ESP_OK) return 0;
-		buf[i] = data[offset];
+		buf[i] = data[index];
 	}
 	return n;
 }
@@ -207,37 +250,35 @@ int16_t M95_Read(M95_t * dev, uint16_t addr, uint8_t *buf, int16_t n)
 // addr(in):Write start address (16-Bit Address)
 // wdata(in):Write data
 //
-int16_t M95_Write(M95_t * dev, uint16_t addr, uint8_t wdata)
+int16_t eeprom_WriteByte(EEPROM_t * dev, uint16_t addr, uint8_t wdata)
 {
 	esp_err_t ret;
 	spi_transaction_t SPITransaction;
 
 	// Set write enable
-	ret = M95_WriteEnable(dev);
+	ret = eeprom_WriteEnable(dev);
 	if (ret != ESP_OK) return 0;
 
 	// Check busy
-	if (M95_IsBusy(dev)) return 0;
+	if (eeprom_IsBusy(dev)) return 0;
 
 	uint8_t data[4];
-	int16_t offset = 0;
+	int16_t index = 0;
 	data[0] = EEPROM_CMD_WRITE;
-	if (dev->_size <= 4) { // M95010,M95020,M95040
-		if (dev->_size == 4 && (addr & 0x10) == 0x10) {
-			data[0] = EEPROM_CMD_WRITE | 0x08;
-		}
+	if (dev->_addressBits == 9 && addr > 0xff) data[0] = data[0] | 0x08;
+	if (dev->_addressBits <= 9) {
 		data[1] = (addr & 0xFF);
 		data[2] = wdata;
-		offset = 2;
+		index = 2;
 	} else {
 		data[1] = (addr>>8) & 0xFF;
 		data[2] = addr & 0xFF;
 		data[3] = wdata;
-		offset = 3;
+		index = 3;
 	}
 
 	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = (offset+1) * 8;
+	SPITransaction.length = (index+1) * 8;
 	SPITransaction.tx_buffer = data;
 	SPITransaction.rx_buffer = data;
 	ret = spi_device_transmit( dev->_SPIHandle, &SPITransaction );
@@ -245,72 +286,48 @@ int16_t M95_Write(M95_t * dev, uint16_t addr, uint8_t wdata)
 	if (ret != ESP_OK) return 0;
 
 	// Wait for idle
-	while( M95_IsBusy(dev) ) {
+	while( eeprom_IsBusy(dev) ) {
 		vTaskDelay(1);
 	}
 	return 1;
 }
 
-// Get page byte size
-int16_t M95_PageSize(M95_t * dev)
-{
-	if (dev->_size <= 4) { // M95010,M95020,M95040
-		return 16;
-	} else if (dev->_size <= 64) { // M95080,M95160,M95320,M95640
-		return 32;
-	} else { // M95128,M95256
-		return 64;
-	}
-}
 //
 // Page Write to Memory Array (WRITE)
-// addr(in):Write start address (16-Bit Address)
+// pages(in):Write page address
 // buf(in):Write data
-//         M32010:Up to 16 Bytes
-//         M32020:Up to 16 Bytes
-//         M32040:Up to 16 Bytes
-//         M32080:Up to 32 Bytes
-//         M32160:Up to 32 Bytes
-//         M32320:Up to 32 Bytes
-//         M32640:Up to 32 Bytes
-//         M32128:Up to 64 Bytes
-//         M32256:Up to 64 Bytes
-// n(in):Number of data bytes to write
 //
-int16_t M95_PageWrite(M95_t * dev, uint16_t addr, uint8_t* buf, int16_t n)
+int16_t eeprom_WritePage(EEPROM_t * dev, int16_t pages, uint8_t* buf)
 {
 	esp_err_t ret;
 	spi_transaction_t SPITransaction;
-	ESP_LOGD(TAG, "M95_PageSize=%d",M95_PageSize(dev));
-	int16_t _n = n;
-	if (_n > M95_PageSize(dev)) _n = M95_PageSize(dev);
 
 	// Set write enable
-	ret = M95_WriteEnable(dev);
+	ret = eeprom_WriteEnable(dev);
 	if (ret != ESP_OK) return 0;
 
 	// Check busy
-	if (M95_IsBusy(dev)) return 0;	
+	if (eeprom_IsBusy(dev)) return 0;	
 
-	uint8_t data[67];
-	int16_t offset = 0;
+	ESP_LOGD(TAG, "_pageSize=%d",dev->_pageSize);
+	uint16_t addr = pages * dev->_pageSize;
+	uint8_t data[131];
+	int16_t index = 0;
 	data[0] = EEPROM_CMD_WRITE;
-	if (dev->_size <= 4) { // M95010,M95020,M95040
-		if (dev->_size == 4 && (addr & 0x10) == 0x10) {
-			data[0] = EEPROM_CMD_WRITE | 0x08;
-		}
+	if (dev->_addressBits == 9 && addr > 0xff) data[0] = data[0] | 0x08;
+	if (dev->_addressBits <= 9) {
 		data[1] = (addr & 0xFF);
-		memcpy( &data[2], buf, _n );
-		offset = 2;
+		memcpy( &data[2], buf, dev->_pageSize );
+		index = 2;
 	} else {
 		data[1] = (addr>>8) & 0xFF;
 		data[2] = addr & 0xFF;
-		memcpy( &data[3], buf, _n );
-		offset = 3;
+		memcpy( &data[3], buf, dev->_pageSize );
+		index = 3;
 	}
 
 	memset( &SPITransaction, 0, sizeof( spi_transaction_t ) );
-	SPITransaction.length = (_n+offset) * 8;
+	SPITransaction.length = (dev->_pageSize+index) * 8;
 	SPITransaction.tx_buffer = data;
 	SPITransaction.rx_buffer = data;
 	ret = spi_device_transmit( dev->_SPIHandle, &SPITransaction );
@@ -318,8 +335,23 @@ int16_t M95_PageWrite(M95_t * dev, uint16_t addr, uint8_t* buf, int16_t n)
 	if (ret != ESP_OK) return 0;
 
 	// Wait for idle
-	while( M95_IsBusy(dev) ) {
+	while( eeprom_IsBusy(dev) ) {
 		vTaskDelay(1);
 	}
-	return _n;
+	return dev->_pageSize;
+}
+
+int16_t eeprom_TotalBytes(EEPROM_t * dev)
+{
+	return dev->_totalBytes;
+}
+
+int16_t eeprom_PageSize(EEPROM_t * dev)
+{
+	return dev->_pageSize;
+}
+
+int16_t eeprom_LastPage(EEPROM_t * dev)
+{
+	return dev->_lastPage;
 }

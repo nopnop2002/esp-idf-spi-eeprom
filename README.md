@@ -1,5 +1,5 @@
-# esp-idf-m95
-M95 series SPI EEPROM Access Library for esp-idf   
+# esp-idf-spi-eeprom
+SPI EEPROM Access Library for esp-idf   
 
 There are several variations in the M95 series.   
 4.5 V to 5.5 V for M95xxx   
@@ -15,8 +15,8 @@ You have to set this config value with menuconfig.
 - CONFIG_CS_GPIO   
 
 ```
-git clone https://github.com/nopnop2002/esp-idf-m95
-cd esp-idf-m95
+git clone https://github.com/nopnop2002/esp-idf-spi-eeprom
+cd esp-idf-esp-eeprom
 make menuconfig
 make flash
 ```
@@ -30,17 +30,17 @@ make flash
 
 # Memory size
 
-|Device|# of Bits|# of Bytes|Byte Address range|Page Size(Byte)|
-|:---|:---|:---|:---|:---|
-|M95010|1K|128|0x00-0x7F|16|
-|M95020|2K|256|0x00-0xFF|16|
-|M95040|4K|512|0x00-0x1FF|16|
-|M95080|8K|1024|0x00-0x3FF|32|
-|M95160|16K|2048|0x00-0x7FF|32|
-|M95320|32K|4096|0x00-0xFFF|32|
-|M95640|64K|8192|0x00-0x1FFF|32|
-|M95128|128K|16384|0x00-0x3FFF|64|
-|M95256|256K|32768|0x00-0x7FFF|64|
+|Device|# of Bits|# of Bytes|Byte Address range|Page Size(Byte)|Page Address Range|
+|:---|:---|:---|:---|:---|:---|
+|M95010|1K|128|0x00-0x7F|16|0-7|
+|M95020|2K|256|0x00-0xFF|16|0-15|
+|M95040|4K|512|0x00-0x1FF|16|0-31|
+|M95080|8K|1024|0x00-0x3FF|32|0-31|
+|M95160|16K|2048|0x00-0x7FF|32|0-63|
+|M95320|32K|4096|0x00-0xFFF|32|0-127|
+|M95640|64K|8192|0x00-0x1FFF|32|0-255|
+|M95128|128K|16384|0x00-0x3FFF|64|0-127|
+|M95256|256K|32768|0x00-0x7FFF|64|0-255|
 
 ---
 
