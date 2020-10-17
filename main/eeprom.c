@@ -12,13 +12,19 @@
 
 #define TAG "EEPROM"
 
+#if APB_CLK_FREQ==80*1000*1000
+#define SPI_MASTER_FREQ_2M	   (APB_CLK_FREQ/40)	///< 2MHz
+#elif APB_CLK_FREQ==40*1000*1000
+#define SPI_MASTER_FREQ_2M	   (APB_CLK_FREQ/20)	///< 4MHz
+#endif
+
 #if 0
 static const int GPIO_MISO = 12;
 static const int GPIO_MOSI = 13;
 static const int GPIO_SCLK = 14;
 #endif
 
-static const int SPI_Frequency = SPI_MASTER_FREQ_8M;
+//static const int SPI_Frequency = SPI_MASTER_FREQ_8M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_20M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_40M;
 //static const int SPI_Frequency = SPI_MASTER_FREQ_80M;
@@ -53,18 +59,9 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 	ESP_LOGD(TAG, "spi_bus_initialize=%d",ret);
 	assert(ret==ESP_OK);
 
-	spi_device_interface_config_t devcfg;
-	memset( &devcfg, 0, sizeof( spi_device_interface_config_t ) );
-	devcfg.clock_speed_hz = SPI_Frequency;
-	devcfg.spics_io_num = GPIO_CS;
-	devcfg.queue_size = 1;
-	devcfg.mode = 0;
-	//devcfg.flags = SPI_DEVICE_NO_DUMMY;
-
-	spi_device_handle_t handle;
-	ret = spi_bus_add_device( HSPI_HOST, &devcfg, &handle);
-	ESP_LOGD(TAG, "spi_bus_add_device=%d",ret);
-	assert(ret==ESP_OK);
+	// M95xxx is 10 MHz Clock Rate
+	// AT24xxx is 3.0 MHz Clock Rate
+	int SPI_Frequency = SPI_MASTER_FREQ_8M;
 	if (model == M95010) {
 		dev->_totalBytes = 128;
 		dev->_addressBits = 7;
@@ -110,7 +107,179 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 		dev->_addressBits = 15;
 		dev->_pageSize = 64;
 		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25010) {
+		SPI_Frequency = SPI_MASTER_FREQ_2M;
+		dev->_totalBytes = 128;
+		dev->_addressBits = 7;
+		dev->_pageSize = 8;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25020) {
+		SPI_Frequency = SPI_MASTER_FREQ_2M;
+		dev->_totalBytes = 256;
+		dev->_addressBits = 8;
+		dev->_pageSize = 8;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25040) {
+		SPI_Frequency = SPI_MASTER_FREQ_2M;
+		dev->_totalBytes = 512;
+		dev->_addressBits = 9;
+		dev->_pageSize = 8;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25080) {
+		SPI_Frequency = SPI_MASTER_FREQ_2M;
+		dev->_totalBytes = 1024;
+		dev->_addressBits = 10;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25160) {
+		SPI_Frequency = SPI_MASTER_FREQ_2M;
+		dev->_totalBytes = 2048;
+		dev->_addressBits = 11;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25320) {
+		SPI_Frequency = SPI_MASTER_FREQ_2M;
+		dev->_totalBytes = 4096;
+		dev->_addressBits = 12;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25640) {
+		SPI_Frequency = SPI_MASTER_FREQ_2M;
+		dev->_totalBytes = 8192;
+		dev->_addressBits = 13;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25128) {
+		SPI_Frequency = SPI_MASTER_FREQ_2M;
+		dev->_totalBytes = 16384;
+		dev->_addressBits = 14;
+		dev->_pageSize = 64;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25256) {
+		SPI_Frequency = SPI_MASTER_FREQ_2M;
+		dev->_totalBytes = 32768;
+		dev->_addressBits = 15;
+		dev->_pageSize = 64;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25512) {
+		dev->_totalBytes = 65536;
+		dev->_addressBits = 16;
+		dev->_pageSize = 64;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
 	}
+
+	//int SPI_Frequency = SPI_MASTER_FREQ_8M;
+	//int SPI_Frequency = SPI_MASTER_FREQ_2M;
+	spi_device_interface_config_t devcfg;
+	memset( &devcfg, 0, sizeof( spi_device_interface_config_t ) );
+	devcfg.clock_speed_hz = SPI_Frequency;
+	devcfg.spics_io_num = GPIO_CS;
+	devcfg.queue_size = 1;
+	devcfg.mode = 0;
+	//devcfg.flags = SPI_DEVICE_NO_DUMMY;
+
+	spi_device_handle_t handle;
+	ret = spi_bus_add_device( HSPI_HOST, &devcfg, &handle);
+	ESP_LOGD(TAG, "spi_bus_add_device=%d",ret);
+	assert(ret==ESP_OK);
+#if 0
+	if (model == M95010) {
+		dev->_totalBytes = 128;
+		dev->_addressBits = 7;
+		dev->_pageSize = 16;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95020) {
+		dev->_totalBytes = 256;
+		dev->_addressBits = 8;
+		dev->_pageSize = 16;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95040) {
+		dev->_totalBytes = 512;
+		dev->_addressBits = 9;
+		dev->_pageSize = 16;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95080) {
+		dev->_totalBytes = 1024;
+		dev->_addressBits = 10;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95160) {
+		dev->_totalBytes = 2048;
+		dev->_addressBits = 11;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95320) {
+		dev->_totalBytes = 4096;
+		dev->_addressBits = 12;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95640) {
+		dev->_totalBytes = 8192;
+		dev->_addressBits = 13;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95128) {
+		dev->_totalBytes = 16384;
+		dev->_addressBits = 14;
+		dev->_pageSize = 64;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == M95256) {
+		dev->_totalBytes = 32768;
+		dev->_addressBits = 15;
+		dev->_pageSize = 64;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25010) {
+		dev->_totalBytes = 128;
+		dev->_addressBits = 7;
+		dev->_pageSize = 8;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25020) {
+		dev->_totalBytes = 256;
+		dev->_addressBits = 8;
+		dev->_pageSize = 8;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25040) {
+		dev->_totalBytes = 512;
+		dev->_addressBits = 9;
+		dev->_pageSize = 8;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25080) {
+		dev->_totalBytes = 1024;
+		dev->_addressBits = 10;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25160) {
+		dev->_totalBytes = 2048;
+		dev->_addressBits = 11;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25320) {
+		dev->_totalBytes = 4096;
+		dev->_addressBits = 12;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25640) {
+		dev->_totalBytes = 8192;
+		dev->_addressBits = 13;
+		dev->_pageSize = 32;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25128) {
+		dev->_totalBytes = 16384;
+		dev->_addressBits = 14;
+		dev->_pageSize = 64;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25256) {
+		dev->_totalBytes = 32768;
+		dev->_addressBits = 15;
+		dev->_pageSize = 64;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	} else if (model == AT25512) {
+		dev->_totalBytes = 65536;
+		dev->_addressBits = 16;
+		dev->_pageSize = 64;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	}
+#endif
 	dev->_SPIHandle = handle;
 }
 
@@ -220,6 +389,9 @@ int16_t eeprom_Read(EEPROM_t * dev, uint16_t addr, uint8_t *buf, int16_t n)
 { 
 	esp_err_t ret;
 	spi_transaction_t SPITransaction;
+
+	if (addr >= dev->_totalBytes) return 0;
+
 	uint8_t data[4];
 	int16_t index = 0;
 	for (int i=0;i<n;i++) {
@@ -254,6 +426,8 @@ int16_t eeprom_WriteByte(EEPROM_t * dev, uint16_t addr, uint8_t wdata)
 {
 	esp_err_t ret;
 	spi_transaction_t SPITransaction;
+
+	if (addr >= dev->_totalBytes) return 0;
 
 	// Set write enable
 	ret = eeprom_WriteEnable(dev);
@@ -302,6 +476,8 @@ int16_t eeprom_WritePage(EEPROM_t * dev, int16_t pages, uint8_t* buf)
 	esp_err_t ret;
 	spi_transaction_t SPITransaction;
 
+	if (pages > dev->_lastPage) return 0;
+
 	// Set write enable
 	ret = eeprom_WriteEnable(dev);
 	if (ret != ESP_OK) return 0;
@@ -341,16 +517,22 @@ int16_t eeprom_WritePage(EEPROM_t * dev, int16_t pages, uint8_t* buf)
 	return dev->_pageSize;
 }
 
-int16_t eeprom_TotalBytes(EEPROM_t * dev)
+// Get total byte
+//
+int32_t eeprom_TotalBytes(EEPROM_t * dev)
 {
 	return dev->_totalBytes;
 }
 
+// Get page size
+//
 int16_t eeprom_PageSize(EEPROM_t * dev)
 {
 	return dev->_pageSize;
 }
 
+// Get last page
+//
 int16_t eeprom_LastPage(EEPROM_t * dev)
 {
 	return dev->_lastPage;

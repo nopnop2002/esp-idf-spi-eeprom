@@ -41,6 +41,46 @@ menu "EEPROM Configuration"
 			bool "M95256"
 			help
 				EEPROM is M95256(256K Bit)
+        config AT25010
+            bool "AT25010"
+            help
+                EEPROM is AT25010(1K Bit)
+        config AT25020
+            bool "AT25020"
+            help
+                EEPROM is AT25020(2K Bit)
+        config AT25040
+            bool "AT25040"
+            help
+                EEPROM is AT25040(4K Bit)
+        config AT25080
+            bool "AT25080"
+            help
+                EEPROM is AT25080(8K Bit)
+        config AT25160
+            bool "AT25160"
+            help
+                EEPROM is AT25160(16K Bit)
+        config AT25320
+            bool "AT25320"
+            help
+                EEPROM is AT25320(32K Bit)
+        config AT25640
+            bool "AT25640"
+            help
+                EEPROM is AT25640(64K Bit)
+        config AT25128
+            bool "AT25128"
+            help
+                EEPROM is AT25128(128K Bit)
+        config AT25256
+            bool "AT25256"
+            help
+                EEPROM is AT25256(256K Bit)
+        config AT25512
+            bool "AT25512"
+            help
+                EEPROM is AT25512(512K Bit)
 	endchoice
 
 	choice SPI

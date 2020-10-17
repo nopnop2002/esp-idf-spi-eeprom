@@ -3,16 +3,28 @@
 
 #include "driver/spi_master.h"
 
-/* EEPROM Model */
-#define	M95010	95010
-#define	M95020	95020
-#define	M95040	95040
-#define	M95080	95080
-#define	M95160	95160
-#define	M95320	95320
-#define	M95640	95640
-#define	M95128	95128
-#define	M95256	95256
+/* STM */
+#define	M95010		95010
+#define	M95020		95020
+#define	M95040		95040
+#define	M95080		95080
+#define	M95160		95160
+#define	M95320		95320
+#define	M95640		95640
+#define	M95128		95128
+#define	M95256		95256
+
+/* ATMEL */
+#define AT25010		25010
+#define AT25020		25020
+#define AT25040		25040
+#define AT25080		25080
+#define AT25160		25160
+#define AT25320		25320
+#define AT25640		25640
+#define AT25128		25128
+#define AT25256		25256
+#define AT25512		25512
 
 /* EEPROM SPI commands */
 #define EEPROM_CMD_WREN    0x06    // Write Enable
@@ -29,7 +41,7 @@
 #define EEPROM_STATUS_WIP     0x01       // Write in Progress
 
 typedef struct {
-	int16_t	_totalBytes;
+	int32_t	_totalBytes;
 	int16_t	_addressBits;
 	int16_t	_pageSize;
 	int16_t	_lastPage;
@@ -45,7 +57,7 @@ esp_err_t eeprom_WriteDisable(EEPROM_t * dev);
 int16_t eeprom_Read(EEPROM_t * dev, uint16_t addr, uint8_t *buf, int16_t n);
 int16_t eeprom_WriteByte(EEPROM_t * dev, uint16_t addr, uint8_t wdata);
 int16_t eeprom_WritePage(EEPROM_t * dev, int16_t pages, uint8_t* buf);
-int16_t eeprom_TotalBytes(EEPROM_t * dev);
+int32_t eeprom_TotalBytes(EEPROM_t * dev);
 int16_t eeprom_PageSize(EEPROM_t * dev);
 int16_t eeprom_LastPage(EEPROM_t * dev);
 

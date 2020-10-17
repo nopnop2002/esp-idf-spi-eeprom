@@ -32,7 +32,7 @@ static const int GPIO_SCLK = 18;
 #endif
 
 #if CONFIG_M95040
-#define	EEPROM_MODEL		M98040
+#define	EEPROM_MODEL		M95040
 #endif
 
 #if CONFIG_M95080
@@ -59,6 +59,45 @@ static const int GPIO_SCLK = 18;
 #define	EEPROM_MODEL		M95256
 #endif
 
+#if CONFIG_AT25010
+#define EEPROM_MODEL        AT25010
+#endif
+
+#if CONFIG_AT25020
+#define EEPROM_MODEL        AT25020
+#endif
+
+#if CONFIG_AT25040
+#define EEPROM_MODEL        AT25040
+#endif
+
+#if CONFIG_AT25080
+#define EEPROM_MODEL        AT25080
+#endif
+
+#if CONFIG_AT25160
+#define EEPROM_MODEL        AT25160
+#endif
+
+#if CONFIG_AT25320
+#define EEPROM_MODEL        AT25320
+#endif
+
+#if CONFIG_AT25640
+#define EEPROM_MODEL        AT25640
+#endif
+
+#if CONFIG_AT25128
+#define EEPROM_MODEL        AT25128
+#endif
+
+#if CONFIG_AT25256
+#define EEPROM_MODEL        AT25256
+#endif
+
+#if CONFIG_AT25512
+#define EEPROM_MODEL        AT25512
+#endif
 
 void dump(uint8_t *dt, int n)
 {
@@ -91,11 +130,11 @@ void app_main(void)
 	ESP_LOGI(TAG, "CONFIG_CS_GPIO=%d", CONFIG_CS_GPIO);
 	EEPROM_t dev;
 	spi_master_init(&dev, EEPROM_MODEL, CONFIG_CS_GPIO, GPIO_MISO, GPIO_MOSI, GPIO_SCLK);
-	int totalBytes = eeprom_TotalBytes(&dev);
+	int32_t totalBytes = eeprom_TotalBytes(&dev);
 	ESP_LOGI(TAG, "totalBytes=%d Bytes",totalBytes);
-	int pageSize = eeprom_PageSize(&dev);
+	int16_t pageSize = eeprom_PageSize(&dev);
 	ESP_LOGI(TAG, "pageSize=%d Bytes",pageSize);
-	int lastPage = eeprom_LastPage(&dev);
+	int16_t lastPage = eeprom_LastPage(&dev);
 	ESP_LOGI(TAG, "lastPage=%d Page",lastPage);
 
 	// Get Status Register
@@ -106,7 +145,7 @@ void app_main(void)
 		ESP_LOGE(TAG, "ReadStatusReg fail %d",ret);
 		while(1) { vTaskDelay(1); }
 	} 
-	ESP_LOGI(TAG, "readStatusReg : %x", reg);
+	ESP_LOGI(TAG, "readStatusReg : 0x%02x", reg);
 
 	// Write Page
 	uint8_t wdata[128];
