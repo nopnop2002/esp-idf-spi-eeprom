@@ -60,7 +60,6 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 	assert(ret==ESP_OK);
 
 	// M95xxx is 10 MHz Clock Rate
-	// AT24xxx is 3.0 MHz Clock Rate
 	int SPI_Frequency = SPI_MASTER_FREQ_8M;
 	if (model == M95010) {
 		dev->_totalBytes = 128;
@@ -107,7 +106,15 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 		dev->_addressBits = 15;
 		dev->_pageSize = 64;
 		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == AT25010) {
+	} else if (model == M95512) {
+		dev->_totalBytes = 65536;
+		dev->_addressBits = 16;
+		dev->_pageSize = 128;
+		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
+	}
+
+	// AT24xxx is 3.0 MHz Clock Rate
+	if (model == AT25010) {
 		SPI_Frequency = SPI_MASTER_FREQ_2M;
 		dev->_totalBytes = 128;
 		dev->_addressBits = 7;
@@ -182,104 +189,6 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 	ret = spi_bus_add_device( HSPI_HOST, &devcfg, &handle);
 	ESP_LOGD(TAG, "spi_bus_add_device=%d",ret);
 	assert(ret==ESP_OK);
-#if 0
-	if (model == M95010) {
-		dev->_totalBytes = 128;
-		dev->_addressBits = 7;
-		dev->_pageSize = 16;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == M95020) {
-		dev->_totalBytes = 256;
-		dev->_addressBits = 8;
-		dev->_pageSize = 16;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == M95040) {
-		dev->_totalBytes = 512;
-		dev->_addressBits = 9;
-		dev->_pageSize = 16;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == M95080) {
-		dev->_totalBytes = 1024;
-		dev->_addressBits = 10;
-		dev->_pageSize = 32;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == M95160) {
-		dev->_totalBytes = 2048;
-		dev->_addressBits = 11;
-		dev->_pageSize = 32;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == M95320) {
-		dev->_totalBytes = 4096;
-		dev->_addressBits = 12;
-		dev->_pageSize = 32;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == M95640) {
-		dev->_totalBytes = 8192;
-		dev->_addressBits = 13;
-		dev->_pageSize = 32;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == M95128) {
-		dev->_totalBytes = 16384;
-		dev->_addressBits = 14;
-		dev->_pageSize = 64;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == M95256) {
-		dev->_totalBytes = 32768;
-		dev->_addressBits = 15;
-		dev->_pageSize = 64;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == AT25010) {
-		dev->_totalBytes = 128;
-		dev->_addressBits = 7;
-		dev->_pageSize = 8;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == AT25020) {
-		dev->_totalBytes = 256;
-		dev->_addressBits = 8;
-		dev->_pageSize = 8;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == AT25040) {
-		dev->_totalBytes = 512;
-		dev->_addressBits = 9;
-		dev->_pageSize = 8;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == AT25080) {
-		dev->_totalBytes = 1024;
-		dev->_addressBits = 10;
-		dev->_pageSize = 32;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == AT25160) {
-		dev->_totalBytes = 2048;
-		dev->_addressBits = 11;
-		dev->_pageSize = 32;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == AT25320) {
-		dev->_totalBytes = 4096;
-		dev->_addressBits = 12;
-		dev->_pageSize = 32;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == AT25640) {
-		dev->_totalBytes = 8192;
-		dev->_addressBits = 13;
-		dev->_pageSize = 32;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == AT25128) {
-		dev->_totalBytes = 16384;
-		dev->_addressBits = 14;
-		dev->_pageSize = 64;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == AT25256) {
-		dev->_totalBytes = 32768;
-		dev->_addressBits = 15;
-		dev->_pageSize = 64;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	} else if (model == AT25512) {
-		dev->_totalBytes = 65536;
-		dev->_addressBits = 16;
-		dev->_pageSize = 64;
-		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
-	}
-#endif
 	dev->_SPIHandle = handle;
 }
 

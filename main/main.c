@@ -59,6 +59,10 @@ static const int GPIO_SCLK = 18;
 #define	EEPROM_MODEL		M95256
 #endif
 
+#if CONFIG_M95512
+#define	EEPROM_MODEL		M95512
+#endif
+
 #if CONFIG_AT25010
 #define EEPROM_MODEL        AT25010
 #endif

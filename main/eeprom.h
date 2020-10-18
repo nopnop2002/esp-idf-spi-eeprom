@@ -13,6 +13,10 @@
 #define	M95640		95640
 #define	M95128		95128
 #define	M95256		95256
+#define	M95512		95512
+#define	M95M01		951024
+#define	M95M02		952048
+#define	M95M04		954096
 
 /* ATMEL */
 #define AT25010		25010
@@ -25,6 +29,10 @@
 #define AT25128		25128
 #define AT25256		25256
 #define AT25512		25512
+
+/* Microchip */
+#define AT25M01		251024
+#define AT25M02		252048
 
 /* EEPROM SPI commands */
 #define EEPROM_CMD_WREN    0x06    // Write Enable

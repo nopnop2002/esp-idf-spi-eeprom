@@ -41,6 +41,10 @@ menu "EEPROM Configuration"
 			bool "M95256"
 			help
 				EEPROM is M95256(256K Bit)
+		config M95512
+			bool "M95512"
+			help
+				EEPROM is M95512(512K Bit)
         config AT25010
             bool "AT25010"
             help
