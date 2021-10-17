@@ -1,5 +1,4 @@
 #include <string.h>
-#include <math.h>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -18,16 +17,13 @@
 #define SPI_MASTER_FREQ_2M	   (APB_CLK_FREQ/20)	///< 4MHz
 #endif
 
-#if 0
-static const int GPIO_MISO = 12;
-static const int GPIO_MOSI = 13;
-static const int GPIO_SCLK = 14;
+#ifdef CONFIG_IDF_TARGET_ESP32
+#define EEPROM_HOST HSPI_HOST
+#elif defined CONFIG_IDF_TARGET_ESP32S2
+#define EEPROM_HOST SPI2_HOST
+#elif defined CONFIG_IDF_TARGET_ESP32C3
+#define EEPROM_HOST SPI2_HOST
 #endif
-
-//static const int SPI_Frequency = SPI_MASTER_FREQ_8M;
-//static const int SPI_Frequency = SPI_MASTER_FREQ_20M;
-//static const int SPI_Frequency = SPI_MASTER_FREQ_40M;
-//static const int SPI_Frequency = SPI_MASTER_FREQ_80M;
 
 
 //
@@ -42,12 +38,15 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 {
 	esp_err_t ret;
 
-	ESP_LOGD(TAG, "GPIO_CS=%d",GPIO_CS);
+	ESP_LOGI(TAG, "GPIO_MISO=%d",GPIO_MISO);
+	ESP_LOGI(TAG, "GPIO_MOSI=%d",GPIO_MOSI);
+	ESP_LOGI(TAG, "GPIO_SCLK=%d",GPIO_SCLK);
+	ESP_LOGI(TAG, "GPIO_CS=%d",GPIO_CS);
 	gpio_pad_select_gpio( GPIO_CS );
 	gpio_set_direction( GPIO_CS, GPIO_MODE_OUTPUT );
 	gpio_set_level( GPIO_CS, 0 );
 
-	spi_bus_config_t spi_bus_config = {
+	spi_bus_config_t buscfg = {
 		.sclk_io_num = GPIO_SCLK,
 		.mosi_io_num = GPIO_MOSI,
 		.miso_io_num = GPIO_MISO,
@@ -55,11 +54,11 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 		.quadhd_io_num = -1
 	};
 
-	ret = spi_bus_initialize( HSPI_HOST, &spi_bus_config, 1 );
+	ret = spi_bus_initialize( EEPROM_HOST, &buscfg, SPI_DMA_CH_AUTO );
 	ESP_LOGD(TAG, "spi_bus_initialize=%d",ret);
 	assert(ret==ESP_OK);
 
-	// M95xxx is 10 MHz Clock Rate
+	// M95xxx is 8MHz Clock Rate
 	int SPI_Frequency = SPI_MASTER_FREQ_8M;
 	if (model == M95010) {
 		dev->_totalBytes = 128;
@@ -113,7 +112,7 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
 	}
 
-	// AT24xxx is 3.0 MHz Clock Rate
+	// AT24xxx is 2MHz Clock Rate
 	if (model == AT25010) {
 		SPI_Frequency = SPI_MASTER_FREQ_2M;
 		dev->_totalBytes = 128;
@@ -175,18 +174,15 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 		dev->_lastPage = (dev->_totalBytes/dev->_pageSize)-1;
 	}
 
-	//int SPI_Frequency = SPI_MASTER_FREQ_8M;
-	//int SPI_Frequency = SPI_MASTER_FREQ_2M;
 	spi_device_interface_config_t devcfg;
 	memset( &devcfg, 0, sizeof( spi_device_interface_config_t ) );
 	devcfg.clock_speed_hz = SPI_Frequency;
 	devcfg.spics_io_num = GPIO_CS;
 	devcfg.queue_size = 1;
 	devcfg.mode = 0;
-	//devcfg.flags = SPI_DEVICE_NO_DUMMY;
 
 	spi_device_handle_t handle;
-	ret = spi_bus_add_device( HSPI_HOST, &devcfg, &handle);
+	ret = spi_bus_add_device( EEPROM_HOST, &devcfg, &handle);
 	ESP_LOGD(TAG, "spi_bus_add_device=%d",ret);
 	assert(ret==ESP_OK);
 	dev->_SPIHandle = handle;
@@ -342,8 +338,14 @@ int16_t eeprom_WriteByte(EEPROM_t * dev, uint16_t addr, uint8_t wdata)
 	ret = eeprom_WriteEnable(dev);
 	if (ret != ESP_OK) return 0;
 
+#if 0
 	// Check busy
 	if (eeprom_IsBusy(dev)) return 0;
+#endif
+	// Wait for idle
+	while( eeprom_IsBusy(dev) ) {
+		vTaskDelay(1);
+	}
 
 	uint8_t data[4];
 	int16_t index = 0;
@@ -391,8 +393,14 @@ int16_t eeprom_WritePage(EEPROM_t * dev, int16_t pages, uint8_t* buf)
 	ret = eeprom_WriteEnable(dev);
 	if (ret != ESP_OK) return 0;
 
+#if 0
 	// Check busy
 	if (eeprom_IsBusy(dev)) return 0;	
+#endif
+	// Wait for idle
+	while( eeprom_IsBusy(dev) ) {
+		vTaskDelay(1);
+	}
 
 	ESP_LOGD(TAG, "_pageSize=%d",dev->_pageSize);
 	uint16_t addr = pages * dev->_pageSize;

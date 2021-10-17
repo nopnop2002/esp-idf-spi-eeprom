@@ -1,24 +1,25 @@
 # esp-idf-spi-eeprom
 SPI EEPROM Driver for esp-idf   
 
-
-# Configure
-You have to set this config value with menuconfig.   
-- CONFIG_MODEL   
-- CONFIG_SPI   
-- CONFIG_CS_GPIO   
-
+# Installation
 ```
 git clone https://github.com/nopnop2002/esp-idf-spi-eeprom
 cd esp-idf-esp-eeprom
-make menuconfig
-make flash
+idf.py menuconfig
+idf.py flash
 ```
 
-![config-1](https://user-images.githubusercontent.com/6020549/96329346-f4950100-1086-11eb-88f9-57d31933c1c3.jpg)
-![config-2](https://user-images.githubusercontent.com/6020549/96329347-f78ff180-1086-11eb-9ee7-3c7209b01a60.jpg)
-![config-3](https://user-images.githubusercontent.com/6020549/96355105-fe674480-1118-11eb-9b3e-c9d429ce271c.jpg)
-![config-4](https://user-images.githubusercontent.com/6020549/96329351-fced3c00-1086-11eb-92e5-1f4bcdbeda8b.jpg)
+# Configuration
+You have to set this config value with menuconfig.   
+- CONFIG_MODEL   
+- CONFIG_CS_GPIO   
+- CONFIG_SCLK_GPIO   
+- CONFIG_MISO_GPIO   
+- CONFIG_MOSI_GPIO   
+
+![config-main](https://user-images.githubusercontent.com/6020549/137619902-92071025-6549-40a6-8339-d157f1c96ba8.jpg)
+![config-app](https://user-images.githubusercontent.com/6020549/137619923-16b0086c-6036-4829-9e2a-a8f58b67d0ce.jpg)
+![config-device](https://user-images.githubusercontent.com/6020549/137619926-d42630ed-3665-4b0e-9604-89da93ccdc38.jpg)
 
 ---
 
