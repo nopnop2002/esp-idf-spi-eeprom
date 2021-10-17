@@ -4,7 +4,7 @@ SPI EEPROM Driver for esp-idf
 # Installation
 ```
 git clone https://github.com/nopnop2002/esp-idf-spi-eeprom
-cd esp-idf-esp-eeprom
+cd esp-idf-spi-eeprom
 idf.py menuconfig
 idf.py flash
 ```
@@ -26,9 +26,9 @@ You have to set this config value with menuconfig.
 # Memory size
 
 ## ST Micro   
-10 MHz Clock Rate.   
+8 MHz Clock Rate.   
 There are several variations in the M95 series.   
-4.5 V to 5.5 V for M95xxx   
+4.5 V to 5.5 V for M95xxx(__Can't use__)   
 2.5 V to 5.5 V for M95xxx-W   
 1.8 V to 5.5 V for M95xxx-R   
 
@@ -48,7 +48,7 @@ __M95xxx don't work with ESP32__
 |M95512|512K|65536|0x00-0xFFFF|128|0-511|
 
 ## ATMEL   
-3.0 MHz Clock Rate.   
+2 MHz Clock Rate.   
 2.7V to 5.5V   
 
 |Device|# of Bits|# of Bytes|Byte Address Range|Page Size(Byte)|Page Address Range|
