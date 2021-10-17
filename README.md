@@ -109,7 +109,7 @@ int16_t eeprom_LastPage(EEPROM_t * dev)
 
 # Wireing  
 
-|#|EEPROM||ESP32|ESP32-S2|ES32-C3|
+|#|EEPROM||ESP32|ESP32-S2|ESP32-C3|
 |:-:|:-:|:-:|:-:|:-:|:-:|
 |1|/CS|--|GPIO12|GPIO12|GPIO1|
 |2|MISO|--|GPIO14|GPIO17|GPIO9|
