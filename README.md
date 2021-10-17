@@ -109,18 +109,18 @@ int16_t eeprom_LastPage(EEPROM_t * dev)
 
 # Wireing  
 
-|#|EEPROM||ESP32(SPI2)|ESP32(SPI3)
-|:-:|:-:|:-:|:-:|:-:|
-|1|/CS|--|GPIO15(*)|GPIO5(*)|
-|2|MISO|--|GPIO12|GPIO19|
-|3|/WP|--|3.3V|3.3V|
-|4|VSS|--|GND|GND|
-|5|MOSI|--|GPIO13|GPIO23|
-|6|SCK|--|GPIO14|GPIO18|
-|7|/HOLD|--|3.3V|3.3V|
-|8|VCC|--|3.3V|3.3V|
+|#|EEPROM||ESP32|ESP32-S2|ES32-C3|
+|:-:|:-:|:-:|:-:|:-:|:-:|
+|1|/CS|--|GPIO12|GPIO12|GPIO1|
+|2|MISO|--|GPIO14|GPIO17|GPIO9|
+|3|/WP|--|3.3V|3.3V|3.3V|
+|4|VSS|--|GND|GND|GND|
+|5|MOSI|--|GPIO15|GPIO18|GPIO10|
+|6|SCK|--|GPIO13|GPIO13|GPIO2|
+|7|/HOLD|--|3.3V|3.3V|3.3V|
+|8|VCC|--|3.3V|3.3V|3.3V|
 
-(*) You can change any GPIO using menuconfig.   
+You can change any GPIO using menuconfig.   
 
 ---
 
