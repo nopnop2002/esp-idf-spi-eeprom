@@ -28,7 +28,7 @@ You have to set this config value with menuconfig.
 ## ST Micro   
 8 MHz Clock Rate.   
 There are several variations in the M95 series.   
-4.5 V to 5.5 V for M95xxx(__Can't use__)   
+4.5 V to 5.5 V for M95xxx(__Not available on ESP32__)   
 2.5 V to 5.5 V for M95xxx-W   
 1.8 V to 5.5 V for M95xxx-R   
 
