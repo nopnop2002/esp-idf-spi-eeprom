@@ -3,7 +3,7 @@
 # project subdirectory.
 #
 
-PROJECT_NAME := m95
+PROJECT_NAME := spi-eeprom
 
 include $(IDF_PATH)/make/project.mk
 

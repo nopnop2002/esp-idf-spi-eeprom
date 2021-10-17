@@ -42,7 +42,8 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 	ESP_LOGI(TAG, "GPIO_MOSI=%d",GPIO_MOSI);
 	ESP_LOGI(TAG, "GPIO_SCLK=%d",GPIO_SCLK);
 	ESP_LOGI(TAG, "GPIO_CS=%d",GPIO_CS);
-	gpio_pad_select_gpio( GPIO_CS );
+	//gpio_pad_select_gpio( GPIO_CS );
+	gpio_reset_pin( GPIO_CS );
 	gpio_set_direction( GPIO_CS, GPIO_MODE_OUTPUT );
 	gpio_set_level( GPIO_CS, 0 );
 
