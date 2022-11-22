@@ -1,10 +1,15 @@
 # esp-idf-spi-eeprom
 SPI EEPROM Driver for esp-idf   
 
+# Software requirements   
+ESP-IDF V4.4/V5.0.   
+
+
 # Installation
 ```
 git clone https://github.com/nopnop2002/esp-idf-spi-eeprom
 cd esp-idf-spi-eeprom
+idf.py set-target {esp32/esp32s2/esp32s3/esp32c3}
 idf.py menuconfig
 idf.py flash
 ```
@@ -18,10 +23,21 @@ You have to set this config value with menuconfig.
 - CONFIG_MOSI_GPIO   
 
 ![config-main](https://user-images.githubusercontent.com/6020549/137619902-92071025-6549-40a6-8339-d157f1c96ba8.jpg)
-![config-app](https://user-images.githubusercontent.com/6020549/137619923-16b0086c-6036-4829-9e2a-a8f58b67d0ce.jpg)
+![config-app](https://user-images.githubusercontent.com/6020549/203246605-1274b27f-2bc7-4a02-9c5a-90398ab7358c.jpg)
 ![config-device](https://user-images.githubusercontent.com/6020549/137619926-d42630ed-3665-4b0e-9604-89da93ccdc38.jpg)
 
----
+
+# SPI BUS selection   
+![config-spi-bus](https://user-images.githubusercontent.com/6020549/203246853-50599729-3dd8-445f-92da-a78cb9cfd984.jpg)
+
+The ESP32 series has three SPI BUSs.   
+SPI1_HOST is used for communication with Flash memory.   
+You can use SPI2_HOST and SPI3_HOST freely.   
+When you use SDSPI(SD Card via SPI), SDSPI uses SPI2_HOST BUS.   
+When using this module at the same time as SDSPI or other SPI device using SPI2_HOST, it needs to be changed to SPI3_HOST.   
+When you don't use SDSPI, both SPI2_HOST and SPI3_HOST will work.   
+Previously it was called HSPI_HOST / VSPI_HOST, but now it is called SPI2_HOST / SPI3_HOST.   
+
 
 # Memory size
 
@@ -31,8 +47,6 @@ There are several variations in the M95 series.
 4.5 V to 5.5 V for M95xxx(__Not available on ESP32__)   
 2.5 V to 5.5 V for M95xxx-W   
 1.8 V to 5.5 V for M95xxx-R   
-
-__M95xxx don't work with ESP32__
 
 |Device|# of Bits|# of Bytes|Byte Address range|Page Size(Byte)|Page Address Range|
 |:---|:---|:---|:---|:---|:---|
@@ -64,7 +78,6 @@ __M95xxx don't work with ESP32__
 |AT25256|256K|32768|0-0x7FFF|64|0-511|
 |AT25512|512K|65536|0-0xFFFF|128|0-511|
 
----
 
 # API
 ```
@@ -105,7 +118,6 @@ int16_t eeprom_PageSize(EEPROM_t * dev)
 int16_t eeprom_LastPage(EEPROM_t * dev)
 ```
 
----
 
 # Wireing  
 
@@ -122,7 +134,6 @@ int16_t eeprom_LastPage(EEPROM_t * dev)
 
 You can change any GPIO using menuconfig.   
 
----
 
 # Serial Monitor   
 ![monitor](https://user-images.githubusercontent.com/6020549/96329356-09719480-1087-11eb-85b3-0601f77a3772.jpg)
