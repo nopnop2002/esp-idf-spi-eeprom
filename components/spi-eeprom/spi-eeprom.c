@@ -7,7 +7,7 @@
 #include <driver/gpio.h>
 #include "esp_log.h"
 
-#include "eeprom.h"
+#include "spi-eeprom.h"
 
 #define TAG "EEPROM"
 
@@ -17,12 +17,10 @@
 #define SPI_MASTER_FREQ_2M	   (APB_CLK_FREQ/20)	///< 4MHz
 #endif
 
-#ifdef CONFIG_IDF_TARGET_ESP32
-#define EEPROM_HOST HSPI_HOST
-#elif defined CONFIG_IDF_TARGET_ESP32S2
-#define EEPROM_HOST SPI2_HOST
-#elif defined CONFIG_IDF_TARGET_ESP32C3
-#define EEPROM_HOST SPI2_HOST
+#if CONFIG_SPI2_HOST
+#define HOST_ID SPI2_HOST
+#elif CONFIG_SPI3_HOST
+#define HOST_ID SPI3_HOST
 #endif
 
 
@@ -55,7 +53,7 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 		.quadhd_io_num = -1
 	};
 
-	ret = spi_bus_initialize( EEPROM_HOST, &buscfg, SPI_DMA_CH_AUTO );
+	ret = spi_bus_initialize( HOST_ID, &buscfg, SPI_DMA_CH_AUTO );
 	ESP_LOGD(TAG, "spi_bus_initialize=%d",ret);
 	assert(ret==ESP_OK);
 
@@ -183,7 +181,7 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 	devcfg.mode = 0;
 
 	spi_device_handle_t handle;
-	ret = spi_bus_add_device( EEPROM_HOST, &devcfg, &handle);
+	ret = spi_bus_add_device( HOST_ID, &devcfg, &handle);
 	ESP_LOGD(TAG, "spi_bus_add_device=%d",ret);
 	assert(ret==ESP_OK);
 	dev->_SPIHandle = handle;

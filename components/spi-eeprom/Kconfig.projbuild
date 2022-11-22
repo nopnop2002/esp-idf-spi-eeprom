@@ -92,7 +92,7 @@ menu "EEPROM Configuration"
 		range 0 34
 		default 12 if IDF_TARGET_ESP32
 		default 12 if IDF_TARGET_ESP32S2
-		default 1  if IDF_TARGET_ESP32C3
+		default  0 if IDF_TARGET_ESP32C3
 		help
 			GPIO number (IOxx) to CS.
 			Some GPIOs are used for other purposes (flash connections, etc.).
@@ -103,7 +103,7 @@ menu "EEPROM Configuration"
 		range 0 34
 		default 13 if IDF_TARGET_ESP32
 		default 13 if IDF_TARGET_ESP32S2
-		default 2  if IDF_TARGET_ESP32C3
+		default  1 if IDF_TARGET_ESP32C3
 		help
 			GPIO number (IOxx) to SCLK.
 			Some GPIOs are used for other purposes (flash connections, etc.).
@@ -114,7 +114,7 @@ menu "EEPROM Configuration"
 		range 0 34
 		default 14 if IDF_TARGET_ESP32
 		default 17 if IDF_TARGET_ESP32S2
-		default 9  if IDF_TARGET_ESP32C3
+		default  2 if IDF_TARGET_ESP32C3
 		help
 			GPIO number (IOxx) to MISO.
 			Some GPIOs are used for other purposes (flash connections, etc.).
@@ -125,11 +125,28 @@ menu "EEPROM Configuration"
 		range 0 39
 		default 15 if IDF_TARGET_ESP32
 		default 18 if IDF_TARGET_ESP32S2
-		default 10 if IDF_TARGET_ESP32C3
+		default  3 if IDF_TARGET_ESP32C3
 		help
 			GPIO number (IOxx) to MOSI.
 			Some GPIOs are used for other purposes (flash connections, etc.).
 			GPIOs 35-39 are input-only so can be used as inputs.
+
+	choice SPI_HOST
+		prompt "SPI peripheral that controls this bus"
+		default SPI2_HOST
+		help
+			Select SPI peripheral that controls this bus.
+		config SPI2_HOST
+			bool "SPI2_HOST"
+			help
+				Use SPI2_HOST. This is also called HSPI_HOST.
+		config SPI3_HOST
+			depends on IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
+			bool "SPI3_HOST"
+			help
+				USE SPI3_HOST. This is also called VSPI_HOST
+	endchoice
+
 endmenu
 
 

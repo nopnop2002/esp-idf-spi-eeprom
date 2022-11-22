@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <inttypes.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -7,7 +8,7 @@
 
 #include "esp_log.h"
 
-#include "eeprom.h"
+#include "spi-eeprom.h"
 
 static const char *TAG = "MAIN";
 
@@ -103,7 +104,7 @@ void dump(uint8_t *dt, int n)
 	for (addr = saddr; addr <= eaddr; addr++) {
 		data = dt[addr];
 		if (clm == 0) {
-			printf("%05x: ",addr);
+			printf("%05"PRIx32": ",addr);
 		}
 
 		printf("%02x ",data);
@@ -122,7 +123,7 @@ void app_main(void)
 	EEPROM_t dev;
 	spi_master_init(&dev, EEPROM_MODEL, CONFIG_CS_GPIO, CONFIG_MISO_GPIO, CONFIG_MOSI_GPIO, CONFIG_SCLK_GPIO);
 	int32_t totalBytes = eeprom_TotalBytes(&dev);
-	ESP_LOGI(TAG, "totalBytes=%d Bytes",totalBytes);
+	ESP_LOGI(TAG, "totalBytes=%"PRIi32" Bytes",totalBytes);
 	int16_t pageSize = eeprom_PageSize(&dev);
 	ESP_LOGI(TAG, "pageSize=%d Bytes",pageSize);
 	int16_t lastPage = eeprom_LastPage(&dev);
