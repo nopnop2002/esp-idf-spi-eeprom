@@ -3,13 +3,13 @@ SPI EEPROM Driver for esp-idf
 
 # Software requirements   
 ESP-IDF V4.4/V5.0.   
-
+ESP-IDF V5 is required when using ESP32-C2.   
 
 # Installation
 ```
 git clone https://github.com/nopnop2002/esp-idf-spi-eeprom
 cd esp-idf-spi-eeprom
-idf.py set-target {esp32/esp32s2/esp32s3/esp32c3}
+idf.py set-target {esp32/esp32s2/esp32s3/esp32c2/esp32c3}
 idf.py menuconfig
 idf.py flash
 ```
@@ -121,14 +121,14 @@ int16_t eeprom_LastPage(EEPROM_t * dev)
 
 # Wireing  
 
-|#|EEPROM||ESP32|ESP32-S2|ESP32-C3|
+|#|EEPROM||ESP32|ESP32-S2/S3|ESP32-C2/C3|
 |:-:|:-:|:-:|:-:|:-:|:-:|
-|1|/CS|--|GPIO12|GPIO12|GPIO1|
-|2|MISO|--|GPIO14|GPIO17|GPIO9|
+|1|/CS|--|GPIO5|GPIO34|GPIO0|
+|2|MISO|--|GPIO19|GPIO37|GPIO2|
 |3|/WP|--|3.3V|3.3V|3.3V|
 |4|VSS|--|GND|GND|GND|
-|5|MOSI|--|GPIO15|GPIO18|GPIO10|
-|6|SCK|--|GPIO13|GPIO13|GPIO2|
+|5|MOSI|--|GPIO23|GPIO35|GPIO3|
+|6|SCK|--|GPIO18|GPIO36|GPIO1|
 |7|/HOLD|--|3.3V|3.3V|3.3V|
 |8|VCC|--|3.3V|3.3V|3.3V|
 

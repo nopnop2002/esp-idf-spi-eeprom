@@ -36,6 +36,7 @@ void spi_master_init(EEPROM_t * dev, uint32_t model, int16_t GPIO_CS, int GPIO_M
 {
 	esp_err_t ret;
 
+	ESP_LOGI(TAG, "APB_CLK_FREQ=%d", APB_CLK_FREQ);
 	ESP_LOGI(TAG, "GPIO_MISO=%d",GPIO_MISO);
 	ESP_LOGI(TAG, "GPIO_MOSI=%d",GPIO_MOSI);
 	ESP_LOGI(TAG, "GPIO_SCLK=%d",GPIO_SCLK);
