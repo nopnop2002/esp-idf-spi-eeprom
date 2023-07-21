@@ -1,5 +1,8 @@
 # esp-idf-spi-eeprom
-SPI EEPROM Driver for esp-idf   
+SPI EEPROM Driver for esp-idf.
+
+What is the difference between flash memory and EEPROM?   
+[Here](https://www.electronicsforu.com/technology-trends/learn-electronics/eeprom-difference-flash-memory) is the answer.   
 
 # Software requirements   
 ESP-IDF V4.4/V5.0.   
