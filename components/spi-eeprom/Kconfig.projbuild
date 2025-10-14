@@ -7,6 +7,7 @@ menu "EEPROM Configuration"
 		default 48 if IDF_TARGET_ESP32S3
 		default 18 if IDF_TARGET_ESP32C2
 		default 19 if IDF_TARGET_ESP32C3
+		default 30 if IDF_TARGET_ESP32C6
 
 	choice MODEL
 		prompt "EEPROM MODEL"
@@ -100,7 +101,7 @@ menu "EEPROM Configuration"
 		range 0 GPIO_RANGE_MAX
 		default  5 if IDF_TARGET_ESP32
 		default 34 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
-		default  0 if IDF_TARGET_ESP32C3 || IDF_TARGET_ESP32C2
+		default  0 # C3 and others
 		help
 			GPIO number (IOxx) to CS.
 			Some GPIOs are used for other purposes (flash connections, etc.).
@@ -111,7 +112,7 @@ menu "EEPROM Configuration"
 		range 0 GPIO_RANGE_MAX
 		default 18 if IDF_TARGET_ESP32
 		default 36 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
-		default  1 if IDF_TARGET_ESP32C3 || IDF_TARGET_ESP32C2
+		default  1 # C3 and others
 		help
 			GPIO number (IOxx) to SCLK.
 			Some GPIOs are used for other purposes (flash connections, etc.).
@@ -122,7 +123,7 @@ menu "EEPROM Configuration"
 		range 0 GPIO_RANGE_MAX
 		default 19 if IDF_TARGET_ESP32
 		default 37 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
-		default  2 if IDF_TARGET_ESP32C3 || IDF_TARGET_ESP32C2
+		default  2 # C3 and others
 		help
 			GPIO number (IOxx) to MISO.
 			Some GPIOs are used for other purposes (flash connections, etc.).
@@ -133,7 +134,7 @@ menu "EEPROM Configuration"
 		range 0 GPIO_RANGE_MAX
 		default 23 if IDF_TARGET_ESP32
 		default 35 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
-		default  3 if IDF_TARGET_ESP32C3 || IDF_TARGET_ESP32C2
+		default  3 # C3 and others
 		help
 			GPIO number (IOxx) to MOSI.
 			Some GPIOs are used for other purposes (flash connections, etc.).
@@ -149,7 +150,7 @@ menu "EEPROM Configuration"
 			help
 				Use SPI2_HOST. This is also called HSPI_HOST.
 		config SPI3_HOST
-			depends on IDF_TARGET_ESP32 || IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
+			depends on IDF_TARGET_ARCH_XTENSA
 			bool "SPI3_HOST"
 			help
 				USE SPI3_HOST. This is also called VSPI_HOST

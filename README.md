@@ -5,14 +5,14 @@ What is the difference between flash memory and EEPROM?
 [This](https://www.electronicsforu.com/technology-trends/learn-electronics/eeprom-difference-flash-memory) is the difference between flash memory and EEPROM.   
 
 # Software requirements   
-ESP-IDF V4.4/V5.0.   
-ESP-IDF V5.0 is required when using ESP32-C2.   
+ESP-IDF V5.0 or later.   
+ESP-IDF V4.4 release branch reached EOL in July 2024.   
 
 # Installation
 ```
 git clone https://github.com/nopnop2002/esp-idf-spi-eeprom
 cd esp-idf-spi-eeprom
-idf.py set-target {esp32/esp32s2/esp32s3/esp32c2/esp32c3}
+idf.py set-target {esp32/esp32s2/esp32s3/esp32c2/esp32c3/esp32c6}
 idf.py menuconfig
 idf.py flash
 ```
@@ -137,6 +137,31 @@ int16_t eeprom_LastPage(EEPROM_t * dev)
 
 You can change any GPIO using menuconfig.   
 
-
 # Serial Monitor   
 ![monitor](https://user-images.githubusercontent.com/6020549/96329356-09719480-1087-11eb-85b3-0601f77a3772.jpg)
+
+# How to use this component in your project   
+Create idf_component.yml in the same directory as main.c.   
+```
+YourProject --+-- CMakeLists.txt
+              +-- main --+-- main.c
+                         +-- CMakeLists.txt
+                         +-- idf_component.yml
+```
+
+Contents of idf_component.yml.
+```
+dependencies:
+  nopnop2002/spi-eeprom:
+    path: components/spi-eeprom/
+    git: https://github.com/nopnop2002/esp-idf-spi-eeprom.git
+```
+
+When you build a projects esp-idf will automaticly fetch repository to managed_components dir and link with your code.   
+```
+YourProject --+-- CMakeLists.txt
+              +-- main --+-- main.c
+              |          +-- CMakeLists.txt
+              |          +-- idf_component.yml
+              +-- managed_components ----- nopnop2002__spi-eeprom
+```
