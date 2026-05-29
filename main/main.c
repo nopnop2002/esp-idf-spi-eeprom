@@ -13,83 +13,83 @@
 static const char *TAG = "MAIN";
 
 #if CONFIG_M95010
-#define	EEPROM_MODEL		M95010
+#define	EEPROM_MODEL M95010
 #endif
 
 #if CONFIG_M95020
-#define	EEPROM_MODEL		M95020
+#define	EEPROM_MODEL M95020
 #endif
 
 #if CONFIG_M95040
-#define	EEPROM_MODEL		M95040
+#define	EEPROM_MODEL M95040
 #endif
 
 #if CONFIG_M95080
-#define	EEPROM_MODEL		M95080
+#define	EEPROM_MODEL M95080
 #endif
 
 #if CONFIG_M95160
-#define	EEPROM_MODEL		M95160
+#define	EEPROM_MODEL M95160
 #endif
 
 #if CONFIG_M95320
-#define	EEPROM_MODEL		M95320
+#define	EEPROM_MODEL M95320
 #endif
 
 #if CONFIG_M95640
-#define	EEPROM_MODEL		M95640
+#define	EEPROM_MODEL M95640
 #endif
 
 #if CONFIG_M95128
-#define	EEPROM_MODEL		M95128
+#define	EEPROM_MODEL M95128
 #endif
 
 #if CONFIG_M95256
-#define	EEPROM_MODEL		M95256
+#define	EEPROM_MODEL M95256
 #endif
 
 #if CONFIG_M95512
-#define	EEPROM_MODEL		M95512
+#define	EEPROM_MODEL M95512
 #endif
 
 #if CONFIG_AT25010
-#define EEPROM_MODEL        AT25010
+#define EEPROM_MODEL AT25010
 #endif
 
 #if CONFIG_AT25020
-#define EEPROM_MODEL        AT25020
+#define EEPROM_MODEL AT25020
 #endif
 
 #if CONFIG_AT25040
-#define EEPROM_MODEL        AT25040
+#define EEPROM_MODEL AT25040
 #endif
 
 #if CONFIG_AT25080
-#define EEPROM_MODEL        AT25080
+#define EEPROM_MODEL AT25080
 #endif
 
 #if CONFIG_AT25160
-#define EEPROM_MODEL        AT25160
+#define EEPROM_MODEL AT25160
 #endif
 
 #if CONFIG_AT25320
-#define EEPROM_MODEL        AT25320
+#define EEPROM_MODEL AT25320
 #endif
 
 #if CONFIG_AT25640
-#define EEPROM_MODEL        AT25640
+#define EEPROM_MODEL AT25640
 #endif
 
 #if CONFIG_AT25128
-#define EEPROM_MODEL        AT25128
+#define EEPROM_MODEL AT25128
 #endif
 
 #if CONFIG_AT25256
-#define EEPROM_MODEL        AT25256
+#define EEPROM_MODEL AT25256
 #endif
 
 #if CONFIG_AT25512
-#define EEPROM_MODEL        AT25512
+#define EEPROM_MODEL AT25512
 #endif
 
 void dump(uint8_t *dt, int n)

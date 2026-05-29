@@ -1,14 +1,5 @@
 menu "EEPROM Configuration"
 
-	config GPIO_RANGE_MAX
-		int
-		default 33 if IDF_TARGET_ESP32
-		default 46 if IDF_TARGET_ESP32S2
-		default 48 if IDF_TARGET_ESP32S3
-		default 18 if IDF_TARGET_ESP32C2
-		default 19 if IDF_TARGET_ESP32C3
-		default 30 if IDF_TARGET_ESP32C6
-
 	choice MODEL
 		prompt "EEPROM MODEL"
 		default M95010
@@ -98,7 +89,7 @@ menu "EEPROM Configuration"
 
 	config CS_GPIO
 		int "CS GPIO number"
-		range 0 GPIO_RANGE_MAX
+		range 0 SOC_GPIO_OUT_RANGE_MAX
 		default  5 if IDF_TARGET_ESP32
 		default 34 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
 		default  0 # C3 and others
@@ -109,7 +100,7 @@ menu "EEPROM Configuration"
 
 	config SCLK_GPIO
 		int "SCLK GPIO number"
-		range 0 GPIO_RANGE_MAX
+		range 0 SOC_GPIO_OUT_RANGE_MAX
 		default 18 if IDF_TARGET_ESP32
 		default 36 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
 		default  1 # C3 and others
@@ -120,7 +111,7 @@ menu "EEPROM Configuration"
 
 	config MISO_GPIO
 		int "MISO GPIO number"
-		range 0 GPIO_RANGE_MAX
+		range 0 SOC_GPIO_IN_RANGE_MAX
 		default 19 if IDF_TARGET_ESP32
 		default 37 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
 		default  2 # C3 and others
@@ -131,7 +122,7 @@ menu "EEPROM Configuration"
 
 	config MOSI_GPIO
 		int "MOSI GPIO number"
-		range 0 GPIO_RANGE_MAX
+		range 0 SOC_GPIO_OUT_RANGE_MAX
 		default 23 if IDF_TARGET_ESP32
 		default 35 if IDF_TARGET_ESP32S2 || IDF_TARGET_ESP32S3
 		default  3 # C3 and others
@@ -150,10 +141,10 @@ menu "EEPROM Configuration"
 			help
 				Use SPI2_HOST. This is also called HSPI_HOST.
 		config SPI3_HOST
-			depends on IDF_TARGET_ARCH_XTENSA
+			depends on SOC_SPI_PERIPH_NUM > 2
 			bool "SPI3_HOST"
 			help
-				USE SPI3_HOST. This is also called VSPI_HOST
+				USE SPI3_HOST. This is also called VSPI_HOST.
 	endchoice
 
 endmenu

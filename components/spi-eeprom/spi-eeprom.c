@@ -11,11 +11,7 @@
 
 #define TAG "EEPROM"
 
-#if APB_CLK_FREQ==80*1000*1000
-#define SPI_MASTER_FREQ_2M	   (APB_CLK_FREQ/40)	///< 2MHz
-#elif APB_CLK_FREQ==40*1000*1000
-#define SPI_MASTER_FREQ_2M	   (APB_CLK_FREQ/20)	///< 4MHz
-#endif
+#define SPI_MASTER_FREQ_2M (2 * 1000 * 1000) ///< 2MHz
 
 #if CONFIG_SPI2_HOST
 #define HOST_ID SPI2_HOST
